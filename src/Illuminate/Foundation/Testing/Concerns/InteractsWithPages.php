@@ -65,9 +65,18 @@ trait InteractsWithPages
 
         $this->currentUri = $this->app->make('request')->fullUrl();
 
-        $this->crawler = new Crawler($this->response->getContent(), $uri);
+        $this->crawler = new Crawler($this->getResponseContent(), $uri);
 
         return $this;
+    }
+
+    private function getResponseContent()
+    {
+        if ($this->response instanceof \Symfony\Component\HttpFoundation\BinaryFileResponse) {
+            return file_get_contents($this->response->getFile()->getPathname());
+        }
+
+        return $this->response->getContent();
     }
 
     /**
