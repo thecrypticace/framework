@@ -144,6 +144,20 @@ class FoundationExpectsModelEventsTest extends TestCase
     }
 
     /** @test */
+    public function observers_do_fire_when_mocking_normal_events()
+    {
+        $this->withoutEvents();
+
+        EloquentTestModel::observe(EloquentTestModelSucceedingObserver::class);
+
+        EloquentTestModel::create(['field' => 1])->delete();
+
+        $this->assertEquals(4, EloquentTestModelSucceedingObserver::$eventsFired);
+
+        EloquentTestModelSucceedingObserver::reset();
+    }
+
+    /** @test */
     public function observers_do_not_fire_when_mocking_events()
     {
         $this->expectsModelEvents(EloquentTestModel::class, [
@@ -217,5 +231,34 @@ class EloquentTestModelFailingObserver
     public function deleted()
     {
         PHPUnit_Framework_Assert::fail('The [deleted] method should not be called on '.static::class);
+    }
+}
+
+class EloquentTestModelSucceedingObserver {
+    public static $eventsFired = 0;
+
+    public function saving()
+    {
+        static::$eventsFired += 1;
+    }
+
+    public function saved()
+    {
+        static::$eventsFired += 1;
+    }
+
+    public function deleting()
+    {
+        static::$eventsFired += 1;
+    }
+
+    public function deleted()
+    {
+        static::$eventsFired += 1;
+    }
+
+    public static function reset()
+    {
+        static::$eventsFired = 0;
     }
 }
