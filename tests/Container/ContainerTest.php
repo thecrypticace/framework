@@ -703,6 +703,8 @@ class ContainerTestContextInjectTwo
     public function __construct(IContainerContractStub $impl)
     {
         $this->impl = $impl;
+
+        $test;
     }
 }
 
