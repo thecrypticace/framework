@@ -29,7 +29,7 @@ class SyncQueue extends Queue implements QueueContract
      * @param  string  $queue
      * @return mixed
      *
-     * @throws \Exception|\Throwable
+     * @throws \Throwable
      */
     public function push($job, $data = '', $queue = null)
     {
@@ -92,7 +92,7 @@ class SyncQueue extends Queue implements QueueContract
      * Raise the exception occurred queue job event.
      *
      * @param  \Illuminate\Contracts\Queue\Job  $job
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return void
      */
     protected function raiseExceptionOccurredJobEvent(Job $job, $e)
@@ -106,10 +106,10 @@ class SyncQueue extends Queue implements QueueContract
      * Handle an exception that occurred while processing a job.
      *
      * @param  \Illuminate\Queue\Jobs\Job  $queueJob
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return void
      *
-     * @throws \Exception
+     * @throws \Throwable
      */
     protected function handleException($queueJob, $e)
     {

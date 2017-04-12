@@ -331,10 +331,10 @@ class Worker
      * @param  string  $connectionName
      * @param  \Illuminate\Contracts\Queue\Job  $job
      * @param  \Illuminate\Queue\WorkerOptions  $options
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return void
      *
-     * @throws \Exception
+     * @throws \Throwable
      */
     protected function handleJobException($connectionName, $job, WorkerOptions $options, $e)
     {
@@ -409,7 +409,7 @@ class Worker
      *
      * @param  string  $connectionName
      * @param  \Illuminate\Contracts\Queue\Job  $job
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return void
      */
     protected function failJob($connectionName, $job, $e)
@@ -450,7 +450,7 @@ class Worker
      *
      * @param  string  $connectionName
      * @param  \Illuminate\Contracts\Queue\Job  $job
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return void
      */
     protected function raiseExceptionOccurredJobEvent($connectionName, $job, $e)
@@ -465,7 +465,7 @@ class Worker
      *
      * @param  string  $connectionName
      * @param  \Illuminate\Contracts\Queue\Job  $job
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return void
      */
     protected function raiseFailedJobEvent($connectionName, $job, $e)
