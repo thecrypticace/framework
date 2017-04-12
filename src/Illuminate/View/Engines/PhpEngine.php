@@ -39,8 +39,6 @@ class PhpEngine implements EngineInterface
         // an exception is thrown. This prevents any partial views from leaking.
         try {
             include $__path;
-        } catch (Exception $e) {
-            $this->handleViewException($e, $obLevel);
         } catch (Throwable $e) {
             $this->handleViewException($e, $obLevel);
         }

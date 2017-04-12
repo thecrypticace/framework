@@ -27,8 +27,6 @@ class Pipeline extends BasePipeline
         return function ($passable) use ($destination) {
             try {
                 return $destination($passable);
-            } catch (Exception $e) {
-                return $this->handleException($passable, $e);
             } catch (Throwable $e) {
                 return $this->handleException($passable, $e);
             }
@@ -50,8 +48,6 @@ class Pipeline extends BasePipeline
                     $callable = $slice($stack, $pipe);
 
                     return $callable($passable);
-                } catch (Exception $e) {
-                    return $this->handleException($passable, $e);
                 } catch (Throwable $e) {
                     return $this->handleException($passable, $e);
                 }

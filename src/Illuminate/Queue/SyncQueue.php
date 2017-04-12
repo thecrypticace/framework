@@ -41,8 +41,6 @@ class SyncQueue extends Queue implements QueueContract
             $queueJob->fire();
 
             $this->raiseAfterJobEvent($queueJob);
-        } catch (Exception $e) {
-            $this->handleException($queueJob, $e);
         } catch (Throwable $e) {
             $this->handleException($queueJob, $e);
         }
