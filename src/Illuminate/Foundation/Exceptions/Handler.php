@@ -3,6 +3,7 @@
 namespace Illuminate\Foundation\Exceptions;
 
 use Exception;
+use Throwable;
 use Whoops\Run as Whoops;
 use Psr\Log\LoggerInterface;
 use Illuminate\Http\Response;
@@ -21,6 +22,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -73,12 +75,12 @@ class Handler implements ExceptionHandlerContract
     /**
      * Report or log an exception.
      *
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return mixed
      *
-     * @throws \Exception
+     * @throws \Throwable
      */
-    public function report(Exception $e)
+    public function report(Throwable $e)
     {
         if ($this->shouldntReport($e)) {
             return;
@@ -100,10 +102,10 @@ class Handler implements ExceptionHandlerContract
     /**
      * Determine if the exception should be reported.
      *
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return bool
      */
-    public function shouldReport(Exception $e)
+    public function shouldReport(Throwable $e)
     {
         return ! $this->shouldntReport($e);
     }
@@ -111,10 +113,10 @@ class Handler implements ExceptionHandlerContract
     /**
      * Determine if the exception is in the "do not report" list.
      *
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return bool
      */
-    protected function shouldntReport(Exception $e)
+    protected function shouldntReport(Throwable $e)
     {
         $dontReport = array_merge($this->dontReport, $this->internalDontReport);
 
@@ -147,7 +149,7 @@ class Handler implements ExceptionHandlerContract
      * @param  \Exception  $e
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function render($request, Exception $e)
+    public function render($request, Throwable $e)
     {
         if (method_exists($e, 'render') && $response = $e->render($request)) {
             return Router::prepareResponse($request, $response);
@@ -171,10 +173,10 @@ class Handler implements ExceptionHandlerContract
     /**
      * Prepare exception for rendering.
      *
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return \Exception
      */
-    protected function prepareException(Exception $e)
+    protected function prepareException(Throwable $e)
     {
         if ($e instanceof ModelNotFoundException) {
             $e = new NotFoundHttpException($e->getMessage(), $e);
@@ -183,6 +185,8 @@ class Handler implements ExceptionHandlerContract
         } elseif ($e instanceof TokenMismatchException) {
             $e = new HttpException(419, $e->getMessage());
         }
+
+        $e = $this->convertThrowableToException($e);
 
         return $e;
     }
@@ -398,11 +402,13 @@ class Handler implements ExceptionHandlerContract
      * Render an exception to the console.
      *
      * @param  \Symfony\Component\Console\Output\OutputInterface  $output
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return void
      */
-    public function renderForConsole($output, Exception $e)
+    public function renderForConsole($output, Throwable $e)
     {
+        $e = $this->convertThrowableToException($e);
+
         (new ConsoleApplication)->renderException($e, $output);
     }
 
@@ -415,5 +421,18 @@ class Handler implements ExceptionHandlerContract
     protected function isHttpException(Exception $e)
     {
         return $e instanceof HttpException;
+    }
+
+    /**
+     * Convert a throwable to an exception
+     *
+     * @param  \Throwable  $e
+     * @return \Exception
+     */
+    private function convertThrowableToException(Throwable $e)
+    {
+        return ! $e instanceof Exception
+            ? new FatalThrowableError($e)
+            : $e;
     }
 }
