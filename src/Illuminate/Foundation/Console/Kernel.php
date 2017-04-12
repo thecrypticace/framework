@@ -12,7 +12,6 @@ use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Contracts\Console\Kernel as KernelContract;
-use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 class Kernel implements KernelContract
 {
@@ -127,8 +126,6 @@ class Kernel implements KernelContract
 
             return 1;
         } catch (Throwable $e) {
-            $e = new FatalThrowableError($e);
-
             $this->reportException($e);
 
             $this->renderException($output, $e);

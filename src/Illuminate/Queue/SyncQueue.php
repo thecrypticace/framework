@@ -7,7 +7,6 @@ use Throwable;
 use Illuminate\Queue\Jobs\SyncJob;
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Contracts\Queue\Queue as QueueContract;
-use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 class SyncQueue extends Queue implements QueueContract
 {
@@ -45,7 +44,7 @@ class SyncQueue extends Queue implements QueueContract
         } catch (Exception $e) {
             $this->handleException($queueJob, $e);
         } catch (Throwable $e) {
-            $this->handleException($queueJob, new FatalThrowableError($e));
+            $this->handleException($queueJob, $e);
         }
 
         return 0;

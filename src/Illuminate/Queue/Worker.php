@@ -7,7 +7,6 @@ use Throwable;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\DetectsLostConnections;
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Illuminate\Contracts\Cache\Repository as CacheContract;
 
 class Worker
@@ -249,7 +248,7 @@ class Worker
 
             $this->stopWorkerIfLostConnection($e);
         } catch (Throwable $e) {
-            $this->exceptions->report(new FatalThrowableError($e));
+            $this->exceptions->report($e);
 
             $this->stopWorkerIfLostConnection($e);
         }
@@ -272,7 +271,7 @@ class Worker
 
             $this->stopWorkerIfLostConnection($e);
         } catch (Throwable $e) {
-            $this->exceptions->report(new FatalThrowableError($e));
+            $this->exceptions->report($e);
 
             $this->stopWorkerIfLostConnection($e);
         }
@@ -322,9 +321,7 @@ class Worker
         } catch (Exception $e) {
             $this->handleJobException($connectionName, $job, $options, $e);
         } catch (Throwable $e) {
-            $this->handleJobException(
-                $connectionName, $job, $options, new FatalThrowableError($e)
-            );
+            $this->handleJobException($connectionName, $job, $options, $e);
         }
     }
 
