@@ -51,7 +51,7 @@ trait ValidatesAttributes
         if ($url = parse_url($value, PHP_URL_HOST)) {
             try {
                 return count(dns_get_record($url, DNS_A | DNS_AAAA)) > 0;
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 return false;
             }
         }
@@ -216,7 +216,7 @@ trait ValidatesAttributes
 
         try {
             return new DateTime($value);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             //
         }
     }

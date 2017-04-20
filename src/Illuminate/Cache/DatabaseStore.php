@@ -3,7 +3,7 @@
 namespace Illuminate\Cache;
 
 use Closure;
-use Exception;
+use Throwable;
 use Carbon\Carbon;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Database\ConnectionInterface;
@@ -99,7 +99,7 @@ class DatabaseStore implements Store
 
         try {
             $this->table()->insert(compact('key', 'value', 'expiration'));
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->table()->where('key', $key)->update(compact('value', 'expiration'));
         }
     }

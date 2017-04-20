@@ -2,7 +2,7 @@
 
 namespace Illuminate\Cache;
 
-use Exception;
+use Throwable;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Contracts\Cache\Store;
@@ -172,7 +172,7 @@ class FileStore implements Store
             $expire = substr(
                 $contents = $this->files->get($path, true), 0, 10
             );
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $this->emptyPayload();
         }
 

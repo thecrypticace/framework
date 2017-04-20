@@ -2,7 +2,7 @@
 
 namespace Illuminate\Events;
 
-use Exception;
+use Throwable;
 use ReflectionClass;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -411,7 +411,7 @@ class Dispatcher implements DispatcherContract
             return (new ReflectionClass($class))->implementsInterface(
                 ShouldQueue::class
             );
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
