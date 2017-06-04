@@ -14,6 +14,10 @@ class ExceptionHandlerTest extends TestCase
         $this->app->make('router')->get('exception', function () {
             throw new \Exception('I must fail');
         });
+
+        $this->app->make('router')->get('throwable', function () {
+            echo $foo;
+        });
     }
 
     /**
@@ -28,6 +32,14 @@ class ExceptionHandlerTest extends TestCase
         $this->assertContains('<!DOCTYPE html>', $response);
         $this->assertContains('Whoops, looks like something went wrong.', $response);
         $this->assertContains('I must fail', $response);
+        $this->assertContains('::main()', $response);
+        $this->assertNotContains('"message":', $response);
+
+        $response = $this->get('throwable')->getContent();
+
+        $this->assertContains('<!DOCTYPE html>', $response);
+        $this->assertContains('Whoops, looks like something went wrong.', $response);
+        $this->assertContains('Undefined variable: foo', $response);
         $this->assertContains('::main()', $response);
         $this->assertNotContains('"message":', $response);
     }
@@ -45,6 +57,13 @@ class ExceptionHandlerTest extends TestCase
         $this->assertContains('Whoops, looks like something went wrong.', $response);
         $this->assertNotContains('I must fail', $response);
         $this->assertNotContains('::main()', $response);
+
+        $response = $this->get('throwable')->getContent();
+
+        $this->assertContains('<!DOCTYPE html>', $response);
+        $this->assertContains('Whoops, looks like something went wrong.', $response);
+        $this->assertNotContains('Undefined variable: foo', $response);
+        $this->assertNotContains('::main()', $response);
     }
 
     /**
@@ -60,6 +79,13 @@ class ExceptionHandlerTest extends TestCase
         $this->assertEquals($response->file, __FILE__);
         $this->assertObjectHasAttribute('line', $response);
         $this->assertObjectHasAttribute('trace', $response);
+
+        $response = json_decode($this->get('throwable', ['Accept' => 'application/json'])->getContent());
+
+        $this->assertEquals($response->message, 'Undefined variable: foo');
+        $this->assertEquals($response->file, __FILE__);
+        $this->assertObjectHasAttribute('line', $response);
+        $this->assertObjectHasAttribute('trace', $response);
     }
 
     /**
@@ -70,6 +96,13 @@ class ExceptionHandlerTest extends TestCase
         $this->app['config']->set('app.debug', false);
 
         $response = json_decode($this->get('exception', ['Accept' => 'application/json'])->getContent());
+
+        $this->assertEquals($response->message, 'Server Error');
+        $this->assertObjectNotHasAttribute('file', $response);
+        $this->assertObjectNotHasAttribute('line', $response);
+        $this->assertObjectNotHasAttribute('trace', $response);
+
+        $response = json_decode($this->get('throwable', ['Accept' => 'application/json'])->getContent());
 
         $this->assertEquals($response->message, 'Server Error');
         $this->assertObjectNotHasAttribute('file', $response);
